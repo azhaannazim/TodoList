@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Header } from "./components/Header";
 import { Tabs } from "./components/Tabs";
 import { TodoInput } from "./components/TodoInput";
@@ -19,13 +19,33 @@ export function App() {
     function AddNewTodo(newTodo) {
         const updatedTodos = [...todos, { input: newTodo, complete: false }];
         setTodos(updatedTodos);
+        SaveData(updatedTodos);
     }
-    function EditTodo(Todo){
+    function CompleteTodo(TabIndex){
+        let newTodos = [...todos];
+        let newTodo = newTodos[TabIndex];
+        newTodo.complete = true;
+        newTodo[TabIndex] = newTodo;
 
+        setTodos(newTodos);
+        SaveData(newTodos);
     }
-    function DeleteTodo(Todo){
+    function DeleteTodo(TabIndex){
+        let updatedTodos = todos.filter((val , Index) => {
+            return Index !== TabIndex;
+        })
+        setTodos(updatedTodos);
+        SaveData(updatedTodos);
+    }
+    function SaveData(currTodos){
+        localStorage.setItem('todos', JSON.stringify({todos : currTodos}));
+    }
 
-    }
+    useEffect(() => {
+        if(!localStorage || !localStorage.getItem('todo-list')){ return }
+        let db = JSON.parse(localStorage.getItem('todo-list'));
+        setTodos(db.todos);
+    } , [])
 
     return (
         <>
@@ -34,7 +54,11 @@ export function App() {
                 setSelectedTab={setSelectedTab}
                 todos={todos}
             />
-            <TodoList selectedTab={selectedTab} todos={todos} />
+            <TodoList CompleteTodo={CompleteTodo} 
+                DeleteTodo={DeleteTodo} 
+                selectedTab={selectedTab} 
+                todos={todos} 
+            />
             <TodoInput AddNewTodo={AddNewTodo} />
         </>
     );
