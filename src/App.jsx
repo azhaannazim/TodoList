@@ -15,6 +15,14 @@ export function App() {
         { input: 'get the groceries', complete: true }
     ]);
     const [selectedTab , setSelectedTab] = useState('Pending');
+    useEffect(() => {
+        // console.log('setSelectedTab')
+        // console.log(localStorage)
+        if(!localStorage || !localStorage.getItem('todos')){ return }
+        let db = JSON.parse(localStorage.getItem('todos'));
+        console.log(db.todos)
+        setTodos(db.todos);
+    } , [])
 
     function AddNewTodo(newTodo) {
         const updatedTodos = [...todos, { input: newTodo, complete: false }];
@@ -41,11 +49,7 @@ export function App() {
         localStorage.setItem('todos', JSON.stringify({todos : currTodos}));
     }
 
-    useEffect(() => {
-        if(!localStorage || !localStorage.getItem('todo-list')){ return }
-        let db = JSON.parse(localStorage.getItem('todo-list'));
-        setTodos(db.todos);
-    } , [])
+    
 
     return (
         <>
